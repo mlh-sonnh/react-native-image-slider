@@ -34,6 +34,7 @@ type PropsType = {
   onPress?: Object => void,
   customButtons?: (number, (number, animated?: boolean) => void) => Node,
   customSlide?: Slide => Node,
+  width?: number,
 };
 
 type StateType = {
@@ -46,7 +47,7 @@ type StateType = {
 class ImageSlider extends Component<PropsType, StateType> {
   state = {
     position: 0,
-    width: Dimensions.get('window').width,
+    width: this.props.width || Dimensions.get('window').width,
     onPositionChangedCalled: false,
     interval: null,
   };
@@ -75,7 +76,7 @@ class ImageSlider extends Component<PropsType, StateType> {
       return;
     }
     const isUpdating = index !== this._getPosition();
-    const x = Dimensions.get('window').width * index;
+    const x = this.props.width ? this.props.width * index : Dimensions.get('window').width * index;
 
     this._ref && this._ref.scrollTo({ y: 0, x, animated });
 
@@ -176,12 +177,12 @@ class ImageSlider extends Component<PropsType, StateType> {
   }
 
   _onLayout = () => {
-    this.setState({ width: Dimensions.get('window').width });
+    this.setState({ width: this.props.width || Dimensions.get('window').width });
     this._move(this.state.position, false);
   };
 
   _renderImage = (image: any, index: number) => {
-    const { width } = Dimensions.get('window');
+    const width = this.props.width || Dimensions.get('window').width;
     const { onPress, customSlide } = this.props;
     const offset = { marginLeft: index === -1 ? -width : 0 };
     const imageStyle = [styles.image, { width }, offset];
